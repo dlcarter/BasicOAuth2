@@ -3,16 +3,12 @@ require 'sinatra/activerecord'
 require './config/environments'
 Dir["./app/models/*"].each {|file| require file }
 
-get '/' do
-  return "Why hello there"
-end
-
 get '/users' do
   return User.all.to_json
 end
 
 # TODO: Secure, salt, hash etc the password
-post '/users.json' do
+post '/users' do
   @user = User.new(name: params[:name], username: params[:username], password: params[:password])
   
   if @user.save
@@ -35,7 +31,7 @@ post '/clients' do
 end
 
 # GET clients#index
-get '/clients.json' do
+get '/clients' do
   return Client.all.to_json
 end
 
@@ -50,19 +46,21 @@ post '/token' do
     case params[:grant_type].downcase
     when 'password'
       u = User.find_by!(username: params[:username], password: params[:password])
-      s = Session.first_or_create(username: u.username)
-      s.generate_token!
-      return [200, s.token]
+      s = Session.first_or_create(user_id: u.id)
     when 'refresh_token'
-      s = Session.find(token: params[:token])
-      s.generate_token!
-      return [200, s.token]
+      s = Session.find_by!(refresh_token: params[:refresh_token])
     else
-      return [422, { errors: "Must request a valid grant type" }]
+      return [400, { error: "invalid_grant" }.to_json]
     end
+    s.refresh!
+    return [200, {
+      access_token: s.token,
+      refresh_token: s.refresh_token,
+      token_type: "example",
+      expires_in: (s.expires_at - Time.now).to_i
+    }.to_json]
   # When an auth record is not found in this context, they are not authorized
   rescue ActiveRecord::RecordNotFound => ex
-    raise ex
-    return 401
+    return [400, { error: "invalid_client" }.to_json]
   end
 end
