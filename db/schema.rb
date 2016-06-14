@@ -29,9 +29,12 @@ ActiveRecord::Schema.define(version: 20160614063243) do
   add_index "sessions", ["user_id"], name: "index_sessions_on_user_id"
 
   create_table "users", force: :cascade do |t|
-    t.string "name"
-    t.string "username"
-    t.string "password"
+    t.string  "name"
+    t.string  "username"
+    t.string  "password"
+    t.integer "client_id"
   end
+
+  add_index "users", ["client_id"], name: "index_users_on_client_id"
 
 end

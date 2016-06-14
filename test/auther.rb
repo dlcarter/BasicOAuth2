@@ -14,8 +14,15 @@ class AutherTest < Minitest::Test
   USERNAME = "Sam #{rand}"
   PASSWORD = SecureRandom.hex 4
 
+  def setup
+    post '/clients', { name: "Client X" }
+    assert last_response.created?
+    response = JSON.parse(last_response.body)
+    client_key = response["key"]
+    post '/users', { name: "John Doe", username: USERNAME, password: PASSWORD, client_key: client_key }
+  end
+
   def create_user
-    post '/users', { name: "John Doe", username: USERNAME, password: PASSWORD }
   end
 
   def test_it_properly_authenticates_by_username
@@ -39,6 +46,7 @@ class AutherTest < Minitest::Test
 
   def test_it_properly_handles_refresh_auth
     create_user
+    assert_equal 1, User.count
 
     post '/token', { grant_type: "password", username: USERNAME, password: PASSWORD }
     assert last_response.ok?
@@ -57,6 +65,12 @@ class AutherTest < Minitest::Test
     assert last_response.bad_request?
     response = JSON.parse(last_response.body)
     assert_equal "invalid_client", response["error"]
+  end
+
+  def teardown
+    Client.destroy_all
+    User.destroy_all
+    Session.destroy_all
   end
 
 end

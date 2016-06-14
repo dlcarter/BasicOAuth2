@@ -8,13 +8,25 @@ get '/users' do
 end
 
 # TODO: Secure, salt, hash etc the password
+# For creating users in the system
+# POST users#create
+# Params:
+#   name: (optional) Friendly name of the user
+#   username: self explanatory
+#   password: self explanatory
+#   client_key: the key for the client to auth against
 post '/users' do
-  @user = User.new(name: params[:name], username: params[:username], password: params[:password])
-  
-  if @user.save
-    return 201
-  else
-    return [422, { errors: @user.errors }.to_json]
+  begin
+    @client = Client.find_by!(key: params[:client_key])
+    @user = User.new(name: params[:name], username: params[:username], password: params[:password], client_id: @client.id)
+    
+    if @user.save
+      return 201
+    else
+      return [422, { errors: @user.errors }.to_json]
+    end
+  rescue ActiveRecord::RecordNotFound
+    return [400, { errors: "Could not find client" }]
   end
 end
 
@@ -24,7 +36,7 @@ post '/clients' do
   @client = Client.new(name: params[:name])
 
   if @client.save
-    return 201
+    return [201, @client.to_json]
   else
     return [422, { errors: @client.errors }.to_json]
   end

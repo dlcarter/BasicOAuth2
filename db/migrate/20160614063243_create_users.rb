@@ -4,6 +4,8 @@ class CreateUsers < ActiveRecord::Migration
       t.string :name
       t.string :username
       t.string :password
+      t.integer :client_id
     end
+    add_index :users, :client_id
   end
 end
