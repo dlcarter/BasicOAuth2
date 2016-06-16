@@ -1,0 +1,30 @@
+<div class="container">
+  <h3>Users</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Username</th><th>Display name</th><th>Password</th><th></th></tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="user in users">
+        <td>{{ user.username }}</td>
+        <td>{{ user.name }}</td>
+        <td>&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</td>
+      </tr>
+      <tfoot>
+        <tr ng-show="!isAdding">
+          <td colspan="3" class="text-center"><a href="" type="button" ng-click="isAdding = true" class="form-control btn btn-default text-center">+ New User</a></td>
+        </tr>
+        <tr ng-show="isAdding" ng-model="newUser">
+          <td><input type="text" class="form-control" ng-model="newUser.username" placeholder="Name"></input></td>
+          <td><input type="text" class="form-control" ng-model="newUser.name" placeholder="Display Name"></input></td>
+          <td><input type="password" class="form-control" ng-model="newUser.password" placeholder="Password"></input></td>
+          <td>
+            <button class="btn btn-default" ng-click="saveNewUser()">Save</button>
+            <button class="btn btn-default" ng-click="newUser = null; isAdding = false">Cancel</button>
+          </td>
+        </tr>
+      </tfoot>
+    </tbody>
+  </table>
+</div>
