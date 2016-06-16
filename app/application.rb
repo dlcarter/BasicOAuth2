@@ -2,6 +2,9 @@ require 'sinatra'
 require 'sinatra/activerecord'
 require './config/environments'
 Dir["./app/models/*"].each {|file| require file }
+set :public_folder, 'public'
+
+set :database_file, "../config/database.yml"
 
 get '/users' do
   return User.all.to_json
@@ -26,7 +29,7 @@ post '/users' do
       return [422, { errors: @user.errors }.to_json]
     end
   rescue ActiveRecord::RecordNotFound
-    return [400, { errors: "Could not find client" }]
+    return [400, { errors: "Could not find client" }.to_json]
   end
 end
 

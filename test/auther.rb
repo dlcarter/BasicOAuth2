@@ -22,12 +22,7 @@ class AutherTest < Minitest::Test
     post '/users', { name: "John Doe", username: USERNAME, password: PASSWORD, client_key: client_key }
   end
 
-  def create_user
-  end
-
   def test_it_properly_authenticates_by_username
-    create_user
-
     post '/token', { grant_type: "password", username: USERNAME, password: PASSWORD }
     assert last_response.ok?
     response = JSON.parse(last_response.body)
@@ -36,8 +31,6 @@ class AutherTest < Minitest::Test
   end
 
   def test_it_rejects_bad_credentials
-    create_user
-    
     post '/token', { grant_type: "password", username: USERNAME, password: "bad_password" }
     assert last_response.bad_request?
     response = JSON.parse(last_response.body)
@@ -45,7 +38,6 @@ class AutherTest < Minitest::Test
   end
 
   def test_it_properly_handles_refresh_auth
-    create_user
     assert_equal 1, User.count
 
     post '/token', { grant_type: "password", username: USERNAME, password: PASSWORD }
