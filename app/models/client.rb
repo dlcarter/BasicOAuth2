@@ -1,5 +1,6 @@
 class Client < ActiveRecord::Base
   validates :name, presence: true, uniqueness: true, length: { minimum: 2 }
+  has_many :users
 
   before_create :generate_key
   before_create :generate_secret

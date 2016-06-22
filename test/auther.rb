@@ -11,15 +11,15 @@ class AutherTest < Minitest::Test
     Sinatra::Application
   end
 
-  USERNAME = "Sam #{rand}"
+  USERNAME = "Sam#{rand(10000)}"
   PASSWORD = SecureRandom.hex 4
 
   def setup
     post '/clients', { name: "Client X" }
     assert last_response.created?
     response = JSON.parse(last_response.body)
-    client_key = response["key"]
-    post '/users', { name: "John Doe", username: USERNAME, password: PASSWORD, client_key: client_key }
+    client_id = response["id"]
+    post "/clients/#{client_id}/users", { name: "John Doe", username: USERNAME, password: PASSWORD }
   end
 
   def test_it_properly_authenticates_by_username

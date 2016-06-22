@@ -8,22 +8,32 @@
       </thead>
       <tbody>
         <tr ng-repeat="client in clients">
-          <td>{{ client.name }}</td>
+          <td><a ng-href="#!/clients/{{ client.id }}">{{ client.name }}</a></td>
           <td>{{ client.key }}</td>
           <td>{{ client.secret }}</td>
+          <td></td>
         </tr>
       </tbody>
       <tfoot>
-        <tr ng-show="!isAdding">
-          <td colspan="4" class="text-center"><a href="" type="button" ng-click="isAdding = true" class="form-control btn btn-default text-center">+ New Client</a></td>
+        <tr ng-show="!isAddingClient">
+          <td colspan="4" class="text-center"><a href="" type="button" ng-click="isAddingClient = true" class="form-control btn btn-default text-center">+ New Client</a></td>
         </tr>
-        <tr ng-show="isAdding" ng-model="newClient">
-          <td><input type="text" class="form-control" ng-model="newClient.name" placeholder="Client Name"></input></td>
+        <tr ng-show="isAddingClient" ng-model="newClient">
+          <td>
+            <div class="form-group" ng-class="{ 'has-error': newClient.errors }">
+              <input type="text" class="form-control" ng-model="newClient.name" placeholder="Client Name"></input>
+              <span class="help-block" ng-repeat="(property, errors) in newClient.errors">
+                <ul>
+                  <li ng-repeat="error in errors"><span ng-hide="property == 'base'">{{ property }} </span>{{ error }} </li>
+                </ul>
+              </span>
+            </div>
+          </td>
           <td></td>
           <td></td>
           <td>
             <input type="submit" class="btn btn-default" value="Save"></input>
-            <button class="btn btn-default" ng-click="newClient = null; isAdding = false">Cancel</button>
+            <button class="btn btn-default" ng-click="setup()">Cancel</button>
           </td>
         </tr>
       </tfoot>

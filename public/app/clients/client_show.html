@@ -1,0 +1,60 @@
+<div class="container">
+  <h3>{{ client.name}} Users</h3>
+  <form ng-submit="saveNewUser()">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Username</th><th>Display name</th><th>Password</th><th></th></tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="user in users">
+          <td>{{ user.username }}</td>
+          <td>{{ user.name }}</td>
+          <td>&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</td>
+          <td></td>
+        </tr>
+        <tfoot>
+          <tr ng-show="!isAddingUser">
+            <td colspan="3" class="text-center"><a href="" type="button" ng-click="isAddingUser = true" class="form-control btn btn-default text-center">+ New User</a></td>
+          </tr>
+          <tr ng-show="isAddingUser" ng-model="newUser">
+            <td>
+              <div class="form-group" ng-class="{ 'has-error': newUser.errors.username }">
+                <input type="text" class="form-control" ng-model="newUser.username" placeholder="Name"></input>
+                <span class="help-block" ng-if="newUser.errors.username">
+                  <ul>
+                    <li ng-repeat="error in newUser.errors.username">username {{ error }}</li>
+                  </ul>
+                </span>
+              </div>
+            </td>
+            <td>
+              <div class="form-group" ng-class="{ 'has-error': newUser.errors.name }">
+                <input type="text" class="form-control" ng-model="newUser.name" placeholder="Display Name"></input>
+                <span class="help-block" ng-if="newUser.errors.name">
+                  <ul>
+                    <li ng-repeat="error in newUser.errors.name">name {{ error }}</li>
+                  </ul>
+                </span>
+              </div>
+            </td>
+            <td>
+              <div class="form-group" ng-class="{ 'has-error': newUser.errors.password }">
+                <input type="password" class="form-control" ng-model="newUser.password" placeholder="Password"></input>
+                <span class="help-block" ng-if="newUser.errors.password">
+                  <ul>
+                    <li ng-repeat="error in newUser.errors.password">password {{ error }}</li>
+                  </ul>
+                </span>
+              </div>
+            </td>
+            <td>
+              <input type="submit" class="btn btn-default" value="Save"></input>
+              <button class="btn btn-default" ng-click="setup()">Cancel</button>
+            </td>
+          </tr>
+        </tfoot>
+      </tbody>
+    </table>
+  </form>
+</div>

@@ -3,11 +3,22 @@ require 'sinatra/activerecord'
 require './config/environments'
 Dir["./app/models/*"].each {|file| require file }
 set :public_folder, 'public'
-
 set :database_file, "../config/database.yml"
 
-get '/users' do
-  return User.all.to_json
+after do
+  ActiveRecord::Base.clear_active_connections!
+end   
+
+helpers do
+  def paramify_json
+    # This will allow us to accept both JSON body and query params
+    begin
+      json_params = JSON.parse(request.body.read)
+    rescue
+      json_params = {}
+    end
+    params.merge!(json_params).symbolize_keys!
+  end
 end
 
 # TODO: Secure, salt, hash etc the password
@@ -17,11 +28,11 @@ end
 #   name: (optional) Friendly name of the user
 #   username: self explanatory
 #   password: self explanatory
-#   client_key: the key for the client to auth against
-post '/users' do
+post '/clients/:client_id/users' do
+  paramify_json
   begin
-    @client = Client.find_by!(key: params[:client_key])
-    @user = User.new(name: params[:name], username: params[:username], password: params[:password], client_id: @client.id)
+    @client = Client.find(params[:client_id])
+    @user = User.new(name: params[:name], username: params[:username], password: params[:password], client: @client)
     
     if @user.save
       return 201
@@ -30,14 +41,17 @@ post '/users' do
     end
   rescue ActiveRecord::RecordNotFound
     return [400, { errors: "Could not find client" }.to_json]
+  rescue
+    return [400, { errors: "An unknown error has occured" }.to_json]
   end
 end
 
 # For registering a new client in the system
 # POST clients#create
 post '/clients' do
-  @client = Client.new(name: params[:name])
-
+  paramify_json
+  sanitized_params = params.slice(:name)
+  @client = Client.new(sanitized_params)
   if @client.save
     return [201, @client.to_json]
   else
@@ -50,6 +64,14 @@ get '/clients' do
   return Client.all.to_json
 end
 
+get '/clients/:id' do
+  return Client.find(params[:id]).to_json
+end
+
+get '/clients/:id/users' do
+  return Client.find(params[:id]).users.to_json
+end
+
 # POST token
 # Params:
 #   grant_type: currently supports only 'password' or 'refresh_token'
@@ -57,6 +79,7 @@ end
 #   password: (password grant_type only) password to authenticate
 #   refresh_token: (refresh_token grant_type only) auth token to refresh
 post '/token' do
+  paramify_json
   begin
     case params[:grant_type].downcase
     when 'password'

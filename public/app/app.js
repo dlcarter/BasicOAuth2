@@ -4,7 +4,6 @@
 angular.module('auther', [
   'ngRoute',
   'ngResource',
-  'auther.users',
   'auther.clients'
 ]).
 config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
