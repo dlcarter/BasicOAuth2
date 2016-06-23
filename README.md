@@ -20,10 +20,10 @@ Simply fire up your browser, and point it at:
 To test the authentication, follow these steps:
 
 #### 1. Create a client
-Click the 'Add client' button and fill in the details. You should see clients appear on the list as you add them.
+Click the 'New Client' button and fill in the details. You should see clients appear on the list as you add them.
 
 #### 2. Create a user
-Navigate to the client you created above by clicking its name in the clients list. From there, you will see a page with a list of users for that client. It will be empty the first time you navigate there. Create a user by clicking 'Add User' at the bottom of the list.
+Navigate to the client you created above by clicking its name in the clients list. From there, you will see a page with a list of users for that client. It will be empty the first time you navigate there. Create a user by clicking 'New User' at the bottom of the list.
 
 #### 3. Login your new user
 Right click 'Login' at the top right of the screen. Fill in the credentials you created in step 2, including the client.
