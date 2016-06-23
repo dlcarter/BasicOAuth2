@@ -75,15 +75,17 @@ end
 # POST token
 # Params:
 #   grant_type: currently supports only 'password' or 'refresh_token'
+#   client_key: (required) the key for the client the user belongs to
 #   username: (password grant_type only) username to authenticate
 #   password: (password grant_type only) password to authenticate
 #   refresh_token: (refresh_token grant_type only) auth token to refresh
 post '/token' do
   paramify_json
   begin
+    @client = Client.find_by!(key: params[:client_key])
     case params[:grant_type].downcase
     when 'password'
-      u = User.find_by!(username: params[:username], password: params[:password])
+      u = User.find_by!(username: params[:username], password: params[:password], client_id: @client.id)
       s = Session.first_or_create(user_id: u.id)
     when 'refresh_token'
       s = Session.find_by!(refresh_token: params[:refresh_token])
@@ -100,5 +102,7 @@ post '/token' do
   # When an auth record is not found in this context, they are not authorized
   rescue ActiveRecord::RecordNotFound => ex
     return [400, { error: "invalid_client" }.to_json]
+  rescue Exception => ex
+    return [500, { error: "malformed_request" }.to_json]
   end
 end

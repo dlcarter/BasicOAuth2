@@ -17,13 +17,13 @@ class AutherTest < Minitest::Test
   def setup
     post '/clients', { name: "Client X" }
     assert last_response.created?
-    response = JSON.parse(last_response.body)
-    client_id = response["id"]
+    @client = JSON.parse(last_response.body)
+    client_id = @client["id"]
     post "/clients/#{client_id}/users", { name: "John Doe", username: USERNAME, password: PASSWORD }
   end
 
   def test_it_properly_authenticates_by_username
-    post '/token', { grant_type: "password", username: USERNAME, password: PASSWORD }
+    post '/token', { grant_type: "password", username: USERNAME, password: PASSWORD, client_key: @client["key"] }
     assert last_response.ok?
     response = JSON.parse(last_response.body)
     assert_equal 32, response["access_token"].length
@@ -40,12 +40,12 @@ class AutherTest < Minitest::Test
   def test_it_properly_handles_refresh_auth
     assert_equal 1, User.count
 
-    post '/token', { grant_type: "password", username: USERNAME, password: PASSWORD }
+    post '/token', { grant_type: "password", username: USERNAME, password: PASSWORD, client_key: @client["key"] }
     assert last_response.ok?
     response = JSON.parse(last_response.body)
     refresh_token = response["refresh_token"]
     
-    post '/token', { grant_type: "refresh_token", refresh_token: refresh_token }
+    post '/token', { grant_type: "refresh_token", refresh_token: refresh_token, client_key: @client["key"] }
     assert last_response.ok?
     response = JSON.parse(last_response.body)
     refute_equal refresh_token, response["access_token"]

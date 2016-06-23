@@ -6,30 +6,30 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>My AngularJS App</title>
+  <title>Basic OAuth2</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
   <link rel="stylesheet" href="app.css">
 </head>
-<body>
+<body ng-app="auther">
   <nav class="navbar navbar-default">
     <div class="container-fluid">
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <div class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
-          <li class="active"><a href="#!/clients">Clients <span class="sr-only">(current)</span></a></li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-            <ul class="dropdown-menu">
-              <li><a href="#">Action</a></li>
-              <li><a href="#">Another action</a></li>
-              <li><a href="#">Something else here</a></li>
-              <li role="separator" class="divider"></li>
-              <li><a href="#">Separated link</a></li>
-            </ul>
+          <li ng-class="{ active: route.current.templateUrl.match('^client') }">
+            <a href="#!/clients">Clients</a>
           </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right" ng-hide="isAuthenticated">
+          <p class="navbar-text">
+            <span class="text-danger">UNAUTHENTICATED</span> <a href="#!/login" class="navbar-link">Log in</a>
+          </p>
+        </ul>
+        <ul class="nav navbar-nav navbar-right" ng-show="isAuthenticated">
+          <p class="navbar-text">
+            <span class="text-success">Logged in as {{ authenticatedUser.username }}</span> <a href="#!/logout" class="navbar-link">Log out</a>
+          </p>
         </ul>
       </div>
     </div>
@@ -38,7 +38,6 @@
   <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
   <![endif]-->
-
   <div ng-view></div>
   
   <!-- In production use:
@@ -48,8 +47,10 @@
   <script src="bower_components/angular/angular.js"></script>
   <script src="bower_components/angular-route/angular-route.js"></script>
   <script src="bower_components/angular-resource/angular-resource.js"></script>
+  <script src="bower_components/angular-cookies/angular-cookies.js"></script>
   <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
   <script src="app.js"></script>
   <script src="clients/clients.js"></script>
+  <script src="auth/auth.js"></script>
 </body>
 </html>
